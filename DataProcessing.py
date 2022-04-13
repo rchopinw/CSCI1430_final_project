@@ -146,7 +146,7 @@ class TFRecordData:
         return img
 
     def __process_categories(self):
-        original_files = os.listdir(self.directory)[:5000]
+        original_files = os.listdir(self.directory)
         self.category_to_file = defaultdict(list)
         self.files = ["{}/{}".format(self.directory, x) for x in original_files]
         self.num_files = len(self.files)
@@ -188,8 +188,7 @@ class TFRecordData:
 if __name__ == '__main__':
     tfr = TFRecordData(
         directory='D:/Brown Learning Materials/CSCI1430/final/archive/images',
-        save_directory='D:/Brown Learning Materials/CSCI1430/final/archive',
-        size=1024
+        save_directory='D:/Brown Learning Materials/CSCI1430/final/archive'
     )
     tfr.convert()
 

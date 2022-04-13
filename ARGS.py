@@ -9,8 +9,8 @@ class ARGS:
         validation_path='',
         test_path='',
         rescale=1 / 255,
-        tf_record_size=128,
-        img_size=(512, 512),
+        tf_record_size=5000,
+        img_size=(700, 500),
     )
 
     ImagePreprocessArgs = dict(
