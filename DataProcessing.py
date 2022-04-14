@@ -10,32 +10,6 @@ import pickle
 from ARGS import ARGS
 
 
-def get_image_generators():
-    train_data_generator = tf.keras.preprocessing.image.ImageDataGenerator(
-        rescale=ARGS.GlobalArgs.get('rescale'),
-        **ARGS.ImagePreprocessArgs
-    )
-    test_data_generator = tf.keras.preprocessing.image.ImageDataGenerator(
-        rescale=ARGS.GlobalArgs.get('rescale')
-    )
-    # construct train and validation generators
-    train_generator = train_data_generator.flow_from_directory(
-        directory=ARGS.GlobalArgs.get('train_path'),
-        seed=ARGS.GlobalArgs.get('random_seed'),
-        **ARGS.ImageDataGeneratorArgs
-    )
-    validation_generator = test_data_generator.flow_from_directory(
-        directory=ARGS.GlobalArgs.get('validation_path'),
-        seed=ARGS.GlobalArgs.get('random_seed'),
-        **ARGS.ImageDataGeneratorArgs
-    )
-    return (
-        train_generator,
-        validation_generator,
-        test_data_generator
-    )
-
-
 def data_parser(x):
     """
     :param x:
@@ -59,10 +33,23 @@ def data_parser(x):
     )
 
 
-def load_data(file_path):
-    df = tf.data.TFRecordDataset(file_path)
-    df = df.map(data_parser)
-    return df
+def get_data_generator(file_path, buffer_size, batch_size, auto_tune):
+    return tf.data.TFRecordDataset(
+        file_path
+    ).map(
+        data_parser
+    ).repeat().shuffle(
+        buffer_size=buffer_size
+    ).batch(
+        batch_size=batch_size
+    ).prefetch(
+        auto_tune
+    )
+
+
+def train_validation_split(file_path, split_rate, file_type='tfrecords'):
+    file_names = [os.listdir(file_path)]
+    random.Random(ARGS.GlobalArgs['random_seed']).shuffle(file_names)
 
 
 def save_obj(obj, name):
@@ -80,8 +67,8 @@ class TFRecordData:
             self,
             directory,
             save_directory,
-            size=ARGS.GlobalArgs['tf_record_size'],
-            image_size=ARGS.GlobalArgs['img_size']
+            size,
+            image_size
     ):
         """
         :param directory:
@@ -170,7 +157,7 @@ class TFRecordData:
     def __extract_class(x):
         # class 2 and 3 are considered as same
         # 2, 3 -> 1; 1 -> 0; 4 -> 2
-        return int(x.split('_')[1]) // 2
+        return int(x.split('/')[-1].split('_')[1]) // 2
 
     @staticmethod
     def __int64_feature(value):
@@ -183,13 +170,3 @@ class TFRecordData:
     @staticmethod
     def __float32_feature(value):
         return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
-
-
-if __name__ == '__main__':
-    tfr = TFRecordData(
-        directory='D:/Brown Learning Materials/CSCI1430/final/archive/images',
-        save_directory='D:/Brown Learning Materials/CSCI1430/final/archive'
-    )
-    tfr.convert()
-
-
