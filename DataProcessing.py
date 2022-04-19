@@ -47,9 +47,15 @@ def get_data_generator(file_path, buffer_size, batch_size, auto_tune):
     )
 
 
-def train_validation_split(file_path, split_rate, file_type='tfrecords'):
-    file_names = [os.listdir(file_path)]
+def train_validation_split(file_names, split_rate, file_type='tfrecords'):
     random.Random(ARGS.GlobalArgs['random_seed']).shuffle(file_names)
+    if file_type:
+        file_names = [x for x in file_names if x.endswith(file_type)]
+    split_index = int(len(file_names) * split_rate)
+    return (
+        file_names[split_index:],
+        file_names[:split_index]
+    )
 
 
 def save_obj(obj, name):
