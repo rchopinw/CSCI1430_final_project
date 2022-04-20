@@ -33,18 +33,29 @@ def data_parser(x):
     )
 
 
-def get_data_generator(file_path, buffer_size, batch_size, auto_tune):
+def get_data(file_path, buffer_size, batch_size, auto_tune):
     return tf.data.TFRecordDataset(
         file_path
     ).map(
         data_parser
-    ).repeat().shuffle(
+    ).shuffle(
         buffer_size=buffer_size
     ).batch(
         batch_size=batch_size
     ).prefetch(
         auto_tune
     )
+
+
+def get_generator(df):
+    """
+    usage: 
+    df = get_data(...)
+    data_gen = get_generator(df)
+    model.fit(data_gen, ...)
+    """
+    for img, label in df.as_numpy_iterator():
+        yield (img, label)
 
 
 def train_validation_split(file_names, split_rate, file_type='tfrecords'):
