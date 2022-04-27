@@ -7,7 +7,7 @@ from ARGS import ARGS
 
 if __name__ == "__main__":
     tf_rec_files = [
-        ARGS.TFRecordConfig["save_directory"] + x
+        ARGS.TFRecordConfig["save_directory"] + os.sep + x
         for x in os.listdir(ARGS.TFRecordConfig["save_directory"])
     ]
     train_files, validation_files = train_validation_split(
