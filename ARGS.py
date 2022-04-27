@@ -23,11 +23,11 @@ class ARGS:
 
     ResNet50TrainArgs = dict(
         model_id="ResNet50",
-        train_batch_size=32,
-        validation_batch_size=32,
-        train_epoch=10,
-        train_buffer_size=256,
-        validation_buffer_size=256,
+        train_batch_size=8,
+        validation_batch_size=8,
+        train_epoch=15,
+        train_buffer_size=128,
+        validation_buffer_size=128,
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=tf.keras.optimizers.Adam(
             learning_rate=1e-5
