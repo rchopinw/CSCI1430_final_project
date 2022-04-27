@@ -61,4 +61,4 @@ class ModelCheckPointSaver(tf.keras.callbacks.Callback):
                     min_acc = file_acc
                     min_acc_file = file
 
-            return min_acc_file, max_acc_file, max_acc, num_weights
+        return min_acc_file, max_acc_file, max_acc, num_weights

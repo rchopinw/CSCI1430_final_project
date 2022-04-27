@@ -23,9 +23,9 @@ class ARGS:
 
     ResNet50TrainArgs = dict(
         model_id="ResNet50",
-        train_batch_size=32,
-        validation_batch_size=32,
-        train_epoch=15,
+        train_batch_size=64,
+        validation_batch_size=64,
+        train_epoch=10,
         train_buffer_size=256,
         validation_buffer_size=256,
         auto_tune=tf.data.experimental.AUTOTUNE,
