@@ -8,24 +8,26 @@ class ARGS:
     GlobalArgs = dict(
         random_seed=42,
         validation_split=0.2,
-        log_dir="",
-        model_dir=""
+        num_classes=3,
+        log_dir="/home/bangxi_xiao2/CSCI1430_final_project/log",
+        model_dir="/home/bangxi_xiao2/CSCI1430_final_project/model"
     )
 
     TFRecordConfig = dict(
         directory='/home/bangxi_xiao2/data/images',
         save_directory='/home/bangxi_xiao2/data',
         size=5000,
+        num_channels=3,
         image_size=(700, 500)
     )
 
     ResNet50TrainArgs = dict(
         model_id="ResNet50",
         train_batch_size=128,
+        validation_batch_size=1024,
         train_epoch=50,
-        train_buffer_size=1024,
+        train_buffer_size=2048,
         validation_buffer_size=1024,
-        steps_per_epoch=30000 // 128 + 1,
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=tf.keras.optimizers.Adam(
             learning_rate=1e-5

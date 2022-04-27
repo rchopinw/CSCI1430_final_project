@@ -8,6 +8,10 @@ class ModelCheckPointSaver(tf.keras.callbacks.Callback):
         super().__init__()
 
         self.checkpoint_dir = checkpoint_dir
+
+        if not os.path.isdir(self.checkpoint_dir):
+            os.mkdir(self.checkpoint_dir)
+
         self.max_num_weights = max_num_weights
         self.model_id = model_id
 

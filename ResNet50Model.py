@@ -1,6 +1,31 @@
 import tensorflow as tf
 
 
+def get_res_net_50_model(
+        input_size,
+        num_classes,
+        depth=3,
+        model_id="ResNet50"
+):
+    base_model = tf.keras.applications.ResNet50V2(
+        weights='imagenet',
+        include_top=False,
+        input_shape=(None, None, depth)
+    )
+    input_layer = tf.keras.Input(shape=input_size, name=model_id+"_input_layer")
+    x = tf.multiply(input_layer, 255.0)
+    x = tf.keras.applications.resnet_v2.preprocess_input(x)
+    x = base_model(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dropout(rate=0.2)(x)
+    x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+    m = tf.keras.Model(
+        inputs=input_layer,
+        outputs=x
+    )
+    return m
+
+
 class ResNet50Model(tf.keras.Model):
     def __init__(
             self,

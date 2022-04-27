@@ -38,7 +38,7 @@ def get_data(file_path, buffer_size, batch_size, auto_tune):
         file_path
     ).map(
         data_parser
-    ).shuffle(
+    ).repeat().shuffle(
         buffer_size=buffer_size
     ).batch(
         batch_size=batch_size
@@ -55,7 +55,7 @@ def get_generator(df):
     model.fit(data_gen, ...)
     """
     for img, label in df.as_numpy_iterator():
-        yield (img, label)
+        yield img, label
 
 
 def train_validation_split(file_names, split_rate, file_type='tfrecords'):
