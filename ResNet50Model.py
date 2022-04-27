@@ -14,7 +14,7 @@ def get_res_net_50_model(
     )
     input_layer = tf.keras.Input(shape=input_size, name=model_id+"_input_layer")
     x = tf.keras.layers.Rescaling(255.0)(input_layer)
-    x = tf.keras.preprocessing.image.smart_resize(x, (512, 512))
+    x = tf.keras.preprocessing.image.smart_resize(x, (256, 256))
     x = tf.keras.applications.resnet_v2.preprocess_input(x)
     x = base_model(x)
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
