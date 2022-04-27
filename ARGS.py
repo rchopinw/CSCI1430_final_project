@@ -9,6 +9,8 @@ class ARGS:
         random_seed=42,
         validation_split=0.2,
         num_classes=3,
+        # log_dir='D:/Brown Learning Materials/CSCI1430/final/train_output/log',
+        # model_dir='D:/Brown Learning Materials/CSCI1430/final/train_output/model'
         log_dir="/home/bangxi_xiao2/train_output/log",
         model_dir="/home/bangxi_xiao2/train_output/model"
     )
@@ -16,7 +18,9 @@ class ARGS:
     TFRecordConfig = dict(
         directory='/home/bangxi_xiao2/data/images',
         save_directory='/home/bangxi_xiao2/data',
-        size=5000,
+        # directory='D:\\Brown Learning Materials\\CSCI1430\\final\\archive\\images',
+        # save_directory='D:\\Brown Learning Materials\\CSCI1430\\final\\archive\\data',
+        size=1000,
         num_channels=3,
         image_size=(700, 500)
     )
@@ -34,6 +38,7 @@ class ARGS:
         ),
         train_loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=[
+            tf.keras.metrics.SparseCategoricalAccuracy(),
             tf.keras.metrics.SparseCategoricalCrossentropy()
         ],
         callbacks=[
