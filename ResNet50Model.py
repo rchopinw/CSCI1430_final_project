@@ -13,11 +13,12 @@ def get_res_net_50_model(
         input_shape=(None, None, depth)
     )
     input_layer = tf.keras.Input(shape=input_size, name=model_id+"_input_layer")
-    x = tf.multiply(input_layer, 255.0)
+    x = tf.keras.layers.Rescaling(255.0)(input_layer)
     x = tf.keras.applications.resnet_v2.preprocess_input(x)
     x = base_model(x)
-    x = tf.keras.layers.Flatten()(x)
-    x = tf.keras.layers.Dropout(rate=0.2)(x)
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    # x = tf.keras.layers.Flatten()(x)
+    # x = tf.keras.layers.Dropout(rate=0.1)(x)
     x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
     m = tf.keras.Model(
         inputs=input_layer,

@@ -26,8 +26,8 @@ class ARGS:
         train_batch_size=32,
         validation_batch_size=32,
         train_epoch=15,
-        train_buffer_size=128,
-        validation_buffer_size=128,
+        train_buffer_size=256,
+        validation_buffer_size=256,
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=tf.keras.optimizers.Adam(
             learning_rate=1e-5
