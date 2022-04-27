@@ -9,8 +9,8 @@ class ARGS:
         random_seed=42,
         validation_split=0.2,
         num_classes=3,
-        log_dir="/home/bangxi_xiao2/CSCI1430_final_project/log",
-        model_dir="/home/bangxi_xiao2/CSCI1430_final_project/model"
+        log_dir="/home/bangxi_xiao2/train_output/log",
+        model_dir="/home/bangxi_xiao2/train_output/model"
     )
 
     TFRecordConfig = dict(
