@@ -60,7 +60,7 @@ class ARGS:
     )
 
     ResNet50Model = dict(
-        model_id="ResNet50",
+        model_id="ResNet50Model",
         train_batch_size=32,
         validation_batch_size=32,
         train_epoch=10,
@@ -77,13 +77,13 @@ class ARGS:
         ],
         callbacks=[
             tf.keras.callbacks.TensorBoard(
-                log_dir=GlobalArgs["log_dir"] + os.sep + "ResNet50",
+                log_dir=GlobalArgs["log_dir"] + os.sep + "ResNet50Model",
                 update_freq="batch",
                 profile_batch=0
             ),
             ModelCheckPointSaver(
-                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "ResNet50",
-                model_id="ResNet50",
+                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "ResNet50Model",
+                model_id="ResNet50Model",
                 max_num_weights=5,
                 save_weights=False
             )
@@ -91,7 +91,7 @@ class ARGS:
     )
 
     XceptionModel = dict(
-        model_id="Xception",
+        model_id="XceptionModel",
         train_batch_size=32,
         validation_batch_size=32,
         train_epoch=10,
@@ -108,13 +108,13 @@ class ARGS:
         ],
         callbacks=[
             tf.keras.callbacks.TensorBoard(
-                log_dir=GlobalArgs["log_dir"] + os.sep + "Xception",
+                log_dir=GlobalArgs["log_dir"] + os.sep + "XceptionModel",
                 update_freq="batch",
                 profile_batch=0
             ),
             ModelCheckPointSaver(
-                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "Xception",
-                model_id="Xception",
+                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "XceptionModel",
+                model_id="XceptionModel",
                 max_num_weights=5,
                 save_weights=False
             )

@@ -16,8 +16,8 @@ def parse_args():
     parser.add_argument(
         '--model',
         required=True,
-        choices=['VanillaModel', "ResNet50", "Xception"],
-        help="Please select model from [VanillaModel, ResNet50, Xception]"
+        choices=['Vanilla', "ResNet50", "Xception"],
+        help="Please select model from [Vanilla, ResNet50, Xception]"
     )
     parser.add_argument(
         '--mode',
@@ -49,7 +49,7 @@ def main():
     print("Loading Mask Detection Model...")
     mask_model = tf.keras.models.load_model(
             get_optimal_model(
-                ARGS.GlobalArgs["model_dir"] + os.sep + AGS.model
+                ARGS.GlobalArgs["model_dir"] + os.sep + AGS.model + "Model"
             )
         )
     print("Success! Mask Detection Model is Loaded as {}".format(AGS.model))

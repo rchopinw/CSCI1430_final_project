@@ -2,6 +2,21 @@ import os
 from DataProcessing import train_validation_split, get_data, get_generator
 from Models import get_res_net_50_model, get_vanilla_model, get_xception_model
 from ARGS import ARGS
+import argparse
+
+
+def model_parser():
+    parser = argparse.ArgumentParser(
+        description="Face Mask Detection Model Training",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        '--model',
+        required=True,
+        choices=['Vanilla', "ResNet50", "Xception"],
+        help="Please select model from [Vanilla, ResNet50, Xception] to train."
+    )
+    return parser.parse_args()
 
 
 def train_model(model_name, model):
@@ -51,40 +66,44 @@ def train_model(model_name, model):
     )
 
 
+def main():
+    if ARG.model == "Vanilla":
+        vanilla_model = get_vanilla_model(
+            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+            num_classes=ARGS.GlobalArgs["num_classes"],
+            resize=ARGS.VanillaModel["resize"],
+            translation=ARGS.VanillaModel["translation"],
+            zoom=ARGS.VanillaModel["zoom"],
+            contrast=ARGS.VanillaModel["contrast"],
+            flip=ARGS.VanillaModel["flip"],
+        )
+        train_model(
+            model_name="VanillaModel",
+            model=vanilla_model
+        )
+    elif ARG.model == "ResNet50":
+        res_net_50_model = get_res_net_50_model(
+            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+            num_classes=ARGS.GlobalArgs['num_classes'],
+            resize=ARGS.ResNet50Model["resize"]
+        )
+        train_model(
+            model_name="ResNet50Model",
+            model=res_net_50_model
+        )
+    elif ARG.model == "Xception":
+        xception_model = get_xception_model(
+            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+            num_classes=ARGS.GlobalArgs['num_classes'],
+            resize=ARGS.XceptionModel["resize"]
+        )
+        train_model(
+            model_name="XceptionModel",
+            model=xception_model
+        )
+
+
 if __name__ == "__main__":
-    # training Vanilla model:
-    vanilla_model = get_vanilla_model(
-        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-        num_classes=ARGS.GlobalArgs["num_classes"],
-        resize=ARGS.VanillaModel["resize"],
-        translation=ARGS.VanillaModel["translation"],
-        zoom=ARGS.VanillaModel["zoom"],
-        contrast=ARGS.VanillaModel["contrast"],
-        flip=ARGS.VanillaModel["flip"],
-    )
-    train_model(
-        model_name="VanillaModel",
-        model=vanilla_model
-    )
+    ARG = model_parser()
+    main()
 
-    # training ResNet50 model:
-    # res_net_50_model = get_res_net_50_model(
-    #     input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-    #     num_classes=ARGS.GlobalArgs['num_classes'],
-    #     resize=ARGS.ResNet50Model["resize"]
-    # )
-    # train_model(
-    #     model_name="ResNet50Model",
-    #     model=res_net_50_model
-    # )
-
-    # training Xception Model:
-    # xception_model = get_xception_model(
-    #     input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-    #     num_classes=ARGS.GlobalArgs['num_classes'],
-    #     resize=ARGS.XceptionModel["resize"]
-    # )
-    # train_model(
-    #     model_name="XceptionModel",
-    #     model=xception_model
-    # )
