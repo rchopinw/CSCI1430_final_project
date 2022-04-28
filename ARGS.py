@@ -123,12 +123,100 @@ class ARGS:
         ]
     )
 
-    VGG16TrainArgs = dict(
-
+    VGG19Model = dict(
+        model_id="VGG19Model",
+        train_batch_size=32,
+        validation_batch_size=32,
+        train_epoch=10,
+        train_buffer_size=256,
+        validation_buffer_size=256,
+        resize=(256, 256),
+        auto_tune=tf.data.experimental.AUTOTUNE,
+        train_optimizer=tf.keras.optimizers.Adam(
+            learning_rate=1e-5
+        ),
+        train_loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        metrics=[
+            tf.keras.metrics.SparseCategoricalAccuracy(),
+            tf.keras.metrics.SparseCategoricalCrossentropy()
+        ],
+        callbacks=[
+            tf.keras.callbacks.TensorBoard(
+                log_dir=GlobalArgs["log_dir"] + os.sep + "VGG19Model",
+                update_freq="batch",
+                profile_batch=0
+            ),
+            ModelCheckPointSaver(
+                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "VGG19Model",
+                model_id="VGG19Model",
+                max_num_weights=5,
+                save_weights=False
+            )
+        ]
     )
 
-    InceptionTrainArgs = dict(
+    InceptionResNetV2Model = dict(
+        model_id="InceptionResNetV2Model",
+        train_batch_size=32,
+        validation_batch_size=32,
+        train_epoch=10,
+        train_buffer_size=256,
+        validation_buffer_size=256,
+        resize=(256, 256),
+        auto_tune=tf.data.experimental.AUTOTUNE,
+        train_optimizer=tf.keras.optimizers.Adam(
+            learning_rate=1e-5
+        ),
+        train_loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        metrics=[
+            tf.keras.metrics.SparseCategoricalAccuracy(),
+            tf.keras.metrics.SparseCategoricalCrossentropy()
+        ],
+        callbacks=[
+            tf.keras.callbacks.TensorBoard(
+                log_dir=GlobalArgs["log_dir"] + os.sep + "InceptionResNetV2Model",
+                update_freq="batch",
+                profile_batch=0
+            ),
+            ModelCheckPointSaver(
+                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "InceptionResNetV2Model",
+                model_id="InceptionResNetV2Model",
+                max_num_weights=5,
+                save_weights=False
+            )
+        ]
+    )
 
+    InceptionV3Model = dict(
+        model_id="InceptionV3",
+        train_batch_size=32,
+        validation_batch_size=32,
+        train_epoch=10,
+        train_buffer_size=256,
+        validation_buffer_size=256,
+        resize=(256, 256),
+        auto_tune=tf.data.experimental.AUTOTUNE,
+        train_optimizer=tf.keras.optimizers.Adam(
+            learning_rate=1e-5
+        ),
+        train_loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        metrics=[
+            tf.keras.metrics.SparseCategoricalAccuracy(),
+            tf.keras.metrics.SparseCategoricalCrossentropy()
+        ],
+        callbacks=[
+            tf.keras.callbacks.TensorBoard(
+                log_dir=GlobalArgs["log_dir"] + os.sep + "InceptionV3",
+                update_freq="batch",
+                profile_batch=0
+            ),
+            ModelCheckPointSaver(
+                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "InceptionV3",
+                model_id="InceptionV3",
+                max_num_weights=5,
+                save_weights=False
+            )
+        ]
     )
 
 

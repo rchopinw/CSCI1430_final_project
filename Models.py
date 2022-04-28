@@ -103,3 +103,81 @@ def get_xception_model(
         outputs=x
     )
     return m
+
+
+def get_vgg_19_model(
+        input_size,
+        num_classes,
+        resize,
+        depth=3,
+        model_id="VGG19"
+):
+    base_model = tf.keras.applications.VGG19(
+        weights='imagenet',
+        include_top=False,
+        input_shape=(None, None, depth)
+    )
+    input_layer = tf.keras.Input(shape=input_size, name=model_id+"_input_layer")
+    x = tf.keras.layers.Rescaling(255.0)(input_layer)
+    x = tf.keras.preprocessing.image.smart_resize(x, resize)
+    x = tf.keras.applications.vgg19.preprocess_input(x)
+    x = base_model(x)
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+    m = tf.keras.Model(
+        inputs=input_layer,
+        outputs=x
+    )
+    return m
+
+
+def get_inception_res_net_v2_model(
+        input_size,
+        num_classes,
+        resize,
+        depth=3,
+        model_id="InceptionResNetV2"
+):
+    base_model = tf.keras.applications.InceptionResNetV2(
+        weights='imagenet',
+        include_top=False,
+        input_shape=(None, None, depth)
+    )
+    input_layer = tf.keras.Input(shape=input_size, name=model_id+"_input_layer")
+    x = tf.keras.layers.Rescaling(255.0)(input_layer)
+    x = tf.keras.preprocessing.image.smart_resize(x, resize)
+    x = tf.keras.applications.inception_resnet_v2.preprocess_input(x)
+    x = base_model(x)
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+    m = tf.keras.Model(
+        inputs=input_layer,
+        outputs=x
+    )
+    return m
+
+
+def get_inception_v3_model(
+        input_size,
+        num_classes,
+        resize,
+        depth=3,
+        model_id="InceptionV3"
+):
+    base_model = tf.keras.applications.InceptionV3(
+        weights='imagenet',
+        include_top=False,
+        input_shape=(None, None, depth)
+    )
+    input_layer = tf.keras.Input(shape=input_size, name=model_id+"_input_layer")
+    x = tf.keras.layers.Rescaling(255.0)(input_layer)
+    x = tf.keras.preprocessing.image.smart_resize(x, resize)
+    x = tf.keras.applications.inception_v3.preprocess_input(x)
+    x = base_model(x)
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
+    m = tf.keras.Model(
+        inputs=input_layer,
+        outputs=x
+    )
+    return m

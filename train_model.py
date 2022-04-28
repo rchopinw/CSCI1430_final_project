@@ -1,6 +1,13 @@
 import os
 from DataProcessing import train_validation_split, get_data, get_generator
-from Models import get_res_net_50_model, get_vanilla_model, get_xception_model
+from Models import (
+    get_vgg_19_model,
+    get_vanilla_model,
+    get_xception_model,
+    get_res_net_50_model,
+    get_inception_v3_model,
+    get_inception_res_net_v2_model
+)
 from ARGS import ARGS
 import argparse
 
@@ -13,8 +20,8 @@ def model_parser():
     parser.add_argument(
         '--model',
         required=True,
-        choices=['Vanilla', "ResNet50", "Xception"],
-        help="Please select model from [Vanilla, ResNet50, Xception] to train."
+        choices=['Vanilla', "ResNet50", "Xception", "VGG19", "InceptionV3", "InceptionResNetV2"],
+        help="Please select model from [Vanilla, ResNet50, Xception, VGG19, Inception] to train."
     )
     return parser.parse_args()
 
@@ -100,6 +107,36 @@ def main():
         train_model(
             model_name="XceptionModel",
             model=xception_model
+        )
+    elif ARG.model == "VGG19":
+        vgg19_model = get_vgg_19_model(
+            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+            num_classes=ARGS.GlobalArgs['num_classes'],
+            resize=ARGS.VGG19Model["resize"]
+        )
+        train_model(
+            model_name="VGG19Model",
+            model=vgg19_model
+        )
+    elif ARG.model == "InceptionResNetV2":
+        inception_res_net_v2_model = get_inception_res_net_v2_model(
+            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+            num_classes=ARGS.GlobalArgs['num_classes'],
+            resize=ARGS.InceptionResNetV2Model["resize"]
+        )
+        train_model(
+            model_name="InceptionResNetV2",
+            model=inception_res_net_v2_model
+        )
+    elif ARG.model == "InceptionV3":
+        inception_v3_model = get_inception_v3_model(
+            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+            num_classes=ARGS.GlobalArgs['num_classes'],
+            resize=ARGS.InceptionV3Model["resize"]
+        )
+        train_model(
+            model_name="InceptionV3",
+            model=inception_v3_model
         )
 
 
