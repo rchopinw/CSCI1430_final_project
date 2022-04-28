@@ -25,7 +25,7 @@ class ARGS:
         model_id="VanillaModel",
         train_batch_size=32,
         validation_batch_size=32,
-        train_epoch=100,
+        train_epoch=50,
         train_buffer_size=256,
         validation_buffer_size=256,
         auto_tune=tf.data.experimental.AUTOTUNE,
