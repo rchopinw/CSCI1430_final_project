@@ -71,8 +71,6 @@ def get_res_net_50_model(
     x = tf.keras.applications.resnet_v2.preprocess_input(x)
     x = base_model(x)
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
-    # x = tf.keras.layers.Flatten()(x)
-    # x = tf.keras.layers.Dropout(rate=0.1)(x)
     x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
     m = tf.keras.Model(
         inputs=input_layer,
@@ -99,8 +97,6 @@ def get_xception_model(
     x = tf.keras.applications.xception.preprocess_input(x)
     x = base_model(x)
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
-    # x = tf.keras.layers.Flatten()(x)
-    # x = tf.keras.layers.Dropout(rate=0.1)(x)
     x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
     m = tf.keras.Model(
         inputs=input_layer,
