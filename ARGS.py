@@ -66,6 +66,7 @@ class ARGS:
         train_epoch=10,
         train_buffer_size=256,
         validation_buffer_size=256,
+        resize=(256, 256),
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=tf.keras.optimizers.Adam(
             learning_rate=1e-5
@@ -97,6 +98,7 @@ class ARGS:
         train_epoch=10,
         train_buffer_size=256,
         validation_buffer_size=256,
+        resize=(256, 256),
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=tf.keras.optimizers.Adam(
             learning_rate=1e-5
