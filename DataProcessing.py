@@ -137,6 +137,7 @@ class TFRecordData:
                     )
                 )
                 writer.write(example.SerializeToString())
+            writer.close()
 
     def helper(self, x):
         try:

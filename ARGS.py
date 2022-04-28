@@ -10,7 +10,9 @@ class ARGS:
         validation_split=0.2,
         num_classes=3,
         log_dir="/home/bangxi_xiao2/train_output/log",
-        model_dir="/home/bangxi_xiao2/train_output/model"
+        model_dir="/home/bangxi_xiao2/train_output/model",
+        face_recognition_dnn_dir='/home/bangxi_xiao2/res10_300x300_ssd_iter_140000.caffemodel',
+        face_recognition_dnn_prototxt_dir='/home/bangxi_xiao2/deploy.prototxt.txt'
     )
 
     TFRecordConfig = dict(
