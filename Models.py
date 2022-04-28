@@ -15,9 +15,9 @@ def get_vanilla_model(
         shape=input_size,
         name=model_id+"_input_layer"
     )
-    aug_resize = tf.keras.layers.Resizing(resize)(input_layer)
-    aug_translation = tf.keras.layers.RandomTranslation(translation)(aug_resize)
-    aug_zoom = tf.keras.layers.RandomZoom(zoom)(aug_translation)
+    aug_resize = tf.keras.layers.Resizing(*resize)(input_layer)
+    aug_translation = tf.keras.layers.RandomTranslation(*translation)(aug_resize)
+    aug_zoom = tf.keras.layers.RandomZoom(*zoom)(aug_translation)
     aug_contrast = tf.keras.layers.RandomContrast(contrast)(aug_zoom)
     aug_flip = tf.keras.layers.RandomFlip(flip)(aug_contrast)
     # block 1
