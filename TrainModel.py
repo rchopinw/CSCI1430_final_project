@@ -5,7 +5,7 @@ from ARGS import ARGS
 
 
 def train_model(model_name, model):
-    print("...Training ResNet50 Model...")
+    print("...Training {} Model...".format(model_name))
     tf_rec_files = [
         ARGS.TFRecordConfig["save_directory"] + os.sep + x
         for x in os.listdir(ARGS.TFRecordConfig["save_directory"])
