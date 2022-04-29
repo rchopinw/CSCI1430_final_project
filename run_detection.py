@@ -5,6 +5,9 @@ import re
 import tensorflow as tf
 from ARGS import ARGS
 import numpy as np
+from skimage.transform import resize
+from skimage.io import imread
+from joblib import Parallel, delayed
 
 
 def parse_args():
@@ -67,6 +70,14 @@ def get_optimal_model(model_dir):
     return optimal_model_dir
 
 
+def load_img(f):
+    return resize(
+        imread(f),
+        ARGS.TFRecordConfig["image_size"],
+        anti_aliasing=True
+    ).astype('float32')
+
+
 def main():
     print("Loading Mask Detection Model...")
     mask_model = tf.keras.models.load_model(
@@ -83,16 +94,25 @@ def main():
     )
     print("Success! Face Detection Model is Loaded.")
 
+    mask_types = ["with mask", "incorrect mask", "without mask"]
+
     if AGS.detectformat == "Image":  # image file/directory mode
         if not AGS.ifile:
             raise NotImplementedError("Please use --ifile to specify image file/directory if --detectmode is set to Image")
         image_file = AGS.ifile
         if os.path.isdir(image_file):  # multiple file mode
-            files = os.listdir(image_file)
+            files = [image_file + os.sep + x for x in os.listdir(image_file)]
         elif os.path.isfile(image_file):  # single file mode
-            pass
+            files = [image_file]
         else:
             raise ValueError("File not found or invalid input.")
+        images = Parallel(n_jobs=-1)(delayed(load_img)(file) for file in files)
+        images = tf.stack(images)
+        predictions = mask_model.predict(images, verbose=0)
+        pred_labels = tf.argmax(predictions, axis=1)
+        print(
+            [(img, pred_label) for img, pred_label in zip(images, pred_labels)]
+        )
     elif AGS.detectformat == "Camera":  # camera mode
         cap = cv2.VideoCapture(0)
 
@@ -142,8 +162,6 @@ def main():
                     face = tf.convert_to_tensor(face, dtype="float32")
 
                     # Make predictions using our trained model
-                    mask_types = ["with mask", "incorrect mask", "without mask"]
-
                     prediction = mask_model.predict(face, verbose=0)[0]
                     predict_type = np.argmax(prediction)
                     predict_conf = round(np.max(prediction) * 100, 2)
