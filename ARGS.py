@@ -162,7 +162,7 @@ class ARGS:
         train_epoch=10,
         train_buffer_size=256,
         validation_buffer_size=256,
-        resize=(256, 256),
+        resize=(350, 250),
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=tf.keras.optimizers.Adam(
             learning_rate=1e-5
@@ -188,7 +188,7 @@ class ARGS:
     )
 
     InceptionV3Model = dict(
-        model_id="InceptionV3",
+        model_id="InceptionV3Model",
         train_batch_size=32,
         validation_batch_size=32,
         train_epoch=10,
@@ -206,13 +206,13 @@ class ARGS:
         ],
         callbacks=[
             tf.keras.callbacks.TensorBoard(
-                log_dir=GlobalArgs["log_dir"] + os.sep + "InceptionV3",
+                log_dir=GlobalArgs["log_dir"] + os.sep + "InceptionV3Model",
                 update_freq="batch",
                 profile_batch=0
             ),
             ModelCheckPointSaver(
-                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "InceptionV3",
-                model_id="InceptionV3",
+                checkpoint_dir=GlobalArgs["model_dir"] + os.sep + "InceptionV3Model",
+                model_id="InceptionV3Model",
                 max_num_weights=5,
                 save_weights=False
             )
