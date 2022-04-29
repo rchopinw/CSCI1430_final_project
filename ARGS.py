@@ -198,8 +198,8 @@ class ARGS:
         resize=(420, 300),
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=AdamW(
-            learning_rate=1e-3,
-            weight_decay=4e-3
+            learning_rate=1e-5,
+            weight_decay=4e-5
         ),
         train_loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=[
