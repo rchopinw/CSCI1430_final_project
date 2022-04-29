@@ -125,7 +125,7 @@ def main():
             resize=ARGS.InceptionResNetV2Model["resize"]
         )
         train_model(
-            model_name="InceptionResNetV2",
+            model_name="InceptionResNetV2Model",
             model=inception_res_net_v2_model
         )
     elif ARG.model == "InceptionV3":
@@ -135,7 +135,7 @@ def main():
             resize=ARGS.InceptionV3Model["resize"]
         )
         train_model(
-            model_name="InceptionV3",
+            model_name="InceptionV3Model",
             model=inception_v3_model
         )
 
