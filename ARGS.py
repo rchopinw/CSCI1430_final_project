@@ -131,7 +131,7 @@ class ARGS:
         train_epoch=10,
         train_buffer_size=256,
         validation_buffer_size=256,
-        resize=(256, 256),
+        resize=(350, 250),
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=tf.keras.optimizers.Adam(
             learning_rate=1e-5
@@ -190,16 +190,16 @@ class ARGS:
 
     InceptionV3Model = dict(
         model_id="InceptionV3Model",
-        train_batch_size=16,
+        train_batch_size=32,
         validation_batch_size=32,
-        train_epoch=10,
+        train_epoch=20,
         train_buffer_size=256,
         validation_buffer_size=256,
         resize=(420, 300),
         auto_tune=tf.data.experimental.AUTOTUNE,
         train_optimizer=AdamW(
-            learning_rate=1e-5,
-            weight_decay=4e-5
+            learning_rate=1e-3,
+            weight_decay=4e-3
         ),
         train_loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=[
