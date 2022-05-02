@@ -19,7 +19,7 @@ class ARGS:
     TFRecordConfig = dict(
         directory='/home/bangxi_xiao2/data/images',
         save_directory='/home/bangxi_xiao2/data',
-        size=1000,
+        size=5000,
         num_channels=3,
         image_size=(700, 500)
     )

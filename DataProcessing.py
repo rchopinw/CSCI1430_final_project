@@ -27,7 +27,8 @@ def data_parser(x):
         parsed_features[x] for x in ['height', 'width', 'channel', 'label']
     ]
     img = tf.io.decode_raw(parsed_features['img_raw'], 'float32')
-    img = tf.reshape(img, (height, width, channel))
+    img = tf.reshape(img, (*ARGS.TFRecordConfig["image_size"], ARGS.TFRecordConfig["num_channels"]))
+    img.set_shape((*ARGS.TFRecordConfig["image_size"], ARGS.TFRecordConfig["num_channels"]))
     return (
         img, label
     )
@@ -35,9 +36,11 @@ def data_parser(x):
 
 def get_data(file_path, buffer_size, batch_size, auto_tune):
     return tf.data.TFRecordDataset(
-        file_path
+        file_path,
+        num_parallel_reads=auto_tune
     ).map(
-        data_parser
+        data_parser,
+        num_parallel_calls=auto_tune
     ).repeat().shuffle(
         buffer_size=buffer_size
     ).batch(
@@ -45,17 +48,6 @@ def get_data(file_path, buffer_size, batch_size, auto_tune):
     ).prefetch(
         auto_tune
     )
-
-
-def get_generator(df):
-    """
-    usage: 
-    df = get_data(...)
-    data_gen = get_generator(df)
-    model.fit(data_gen, ...)
-    """
-    for img, label in df.as_numpy_iterator():
-        yield img, label
 
 
 def train_validation_split(file_names, split_rate, file_type='tfrecords'):

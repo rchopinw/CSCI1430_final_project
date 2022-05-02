@@ -1,5 +1,5 @@
 import os
-from DataProcessing import train_validation_split, get_data, get_generator
+from DataProcessing import train_validation_split, get_data
 from Models import (
     get_vgg_19_model,
     get_vanilla_model,
@@ -50,9 +50,6 @@ def train_model(model_name, model):
         auto_tune=ARGS.__dict__[model_name]["auto_tune"]
     )
 
-    train_generator = get_generator(train_data)
-    validation_generator = get_generator(validation_data)
-
     model.compile(
         optimizer=ARGS.__dict__[model_name]["train_optimizer"],
         loss=ARGS.__dict__[model_name]["train_loss"],
@@ -64,8 +61,8 @@ def train_model(model_name, model):
         len(validation_files) * ARGS.TFRecordConfig["size"] // ARGS.__dict__[model_name]["validation_batch_size"] + 1
 
     model.fit(
-        x=train_generator,
-        validation_data=validation_generator,
+        x=train_data,
+        validation_data=validation_data,
         epochs=ARGS.__dict__[model_name]["train_epoch"],
         steps_per_epoch=steps_per_epoch,
         validation_steps=validation_steps,
@@ -129,7 +126,7 @@ def main():
             model=inception_res_net_v2_model
         )
     elif ARG.model == "InceptionV3":
-        inception_v3_model, inception_v3_base_layer_index = get_inception_v3_model(
+        inception_v3_model = get_inception_v3_model(
             input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
             num_classes=ARGS.GlobalArgs['num_classes'],
             resize=ARGS.InceptionV3Model["resize"]

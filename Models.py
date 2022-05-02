@@ -162,8 +162,7 @@ def get_inception_v3_model(
         num_classes,
         resize,
         depth=3,
-        model_id="InceptionV3",
-        return_base_layer=True
+        model_id="InceptionV3"
 ):
     base_model = tf.keras.applications.InceptionV3(
         weights='imagenet',
@@ -183,8 +182,4 @@ def get_inception_v3_model(
         inputs=input_layer,
         outputs=x
     )
-    if return_base_layer:
-        for i, layer in enumerate(m.layers):
-            if layer.name == "inception_v3":
-                return m, i
     return m
