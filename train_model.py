@@ -134,12 +134,6 @@ def main():
             num_classes=ARGS.GlobalArgs['num_classes'],
             resize=ARGS.InceptionV3Model["resize"]
         )
-        inception_v3_model.layers[inception_v3_base_layer_index].trainable = False
-        train_model(
-            model_name="InceptionV3Model",
-            model=inception_v3_model
-        )
-        inception_v3_model.layers[inception_v3_base_layer_index].trainable = True
         train_model(
             model_name="InceptionV3Model",
             model=inception_v3_model
