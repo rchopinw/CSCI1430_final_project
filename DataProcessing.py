@@ -72,6 +72,19 @@ def load_obj(name):
         return pickle.load(f)
 
 
+  
+def helper(x):
+    try:
+        img = resize(
+            io.imread(x),
+            (700, 500),
+            anti_aliasing=True
+        ).astype('float32')
+    except:
+        img = None
+    return img  
+    
+    
 class TFRecordData:
     def __init__(
             self,
@@ -107,7 +120,7 @@ class TFRecordData:
             random.Random(ARGS.GlobalArgs['random_seed']).shuffle(files)  # reproduce
 
             print('Loading Files...')
-            train_x = Parallel(n_jobs=-1)(delayed(self.helper)(x) for x in files)
+            train_x = Parallel(n_jobs=-1)(delayed(helper)(x) for x in files)
             train_y = [self.__extract_class(file) for file in files]
 
             print('Initializing TFRecord Data Writer...')
@@ -133,16 +146,6 @@ class TFRecordData:
                 writer.write(example.SerializeToString())
             writer.close()
 
-    def helper(self, x):
-        try:
-            img = resize(
-                io.imread(x),
-                self.image_size,
-                anti_aliasing=True
-            ).astype('float32')
-        except:
-            img = None
-        return img
 
     def __process_categories(self):
         original_files = os.listdir(self.directory)
