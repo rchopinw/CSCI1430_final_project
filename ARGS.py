@@ -21,7 +21,7 @@ class ARGS:
         save_directory='/home/bangxi_xiao2/data',
         test_directory='/home/bangxi_xiao2/data/images',
         test_save_directory='/home/bangxi_xiao2/data/test_tfrecords',
-        size=5000,
+        size=2000,
         num_channels=3,
         image_size=(700, 500)
     )
