@@ -21,7 +21,7 @@ class ARGS:
         save_directory='/home/bangxi_xiao2/data',
         test_directory='/home/bangxi_xiao2/data/images',
         test_save_directory='/home/bangxi_xiao2/data/test_tfrecords',
-        size=2000,
+        size=1000,
         num_channels=3,
         image_size=(700, 500)
     )
@@ -226,7 +226,8 @@ class ARGS:
     TestConfig = dict(
         auto_tune=tf.data.experimental.AUTOTUNE,
         test_batch_size=32,
-        test_buffer_size=256
+        test_buffer_size=256,
+        size=1000
     )
 
 random.seed(ARGS.GlobalArgs['random_seed'])
