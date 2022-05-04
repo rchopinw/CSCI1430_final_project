@@ -191,12 +191,12 @@ def main():
             elif ARG.model == "InceptionV3":
                 train_inceptionv3()
     elif ARG.mode == "test":
-        if os.path.isdir(ARG.test):
-            file_names = os.listdir(ARG.test)
+        if os.path.isdir(ARG.testFile):
+            file_names = os.listdir(ARG.testFile)
             file_names = [x for x in file_names if x.endswith('tfrecords') or x.endswith('tfrecord')]
-        elif os.path.isfile(ARG.test):
-            if ARG.test.endswith('tfrecords') or ARG.test.endswith('tfrecord'):
-                file_names = [ARG.test]
+        elif os.path.isfile(ARG.testFile):
+            if ARG.testFile.endswith('tfrecords') or ARG.testFile.endswith('tfrecord'):
+                file_names = [ARG.testFile]
             else:
                 file_names = []
         else:
