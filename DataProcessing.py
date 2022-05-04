@@ -103,6 +103,7 @@ class TFRecordData:
                 ],
                 []
             )
+            print(len(files))
             random.Random(ARGS.GlobalArgs['random_seed']).shuffle(files)  # reproduce
 
             print('Loading Files...')
