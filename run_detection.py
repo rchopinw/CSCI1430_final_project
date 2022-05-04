@@ -3,7 +3,8 @@ import cv2
 import argparse
 import re
 import tensorflow as tf
-from ARGS import ARGS
+from ModelARGS import ARGS
+from ProcessARGS import GlobalArgs, TFRecordConfigArgs
 import numpy as np
 from skimage.transform import resize
 from skimage.io import imread
@@ -13,7 +14,7 @@ from DataProcessing import get_optimal_model
 
 def parse_args():
     print("Scanning Available Models...")
-    current_models = os.listdir(ARGS.GlobalArgs["model_dir"])
+    current_models = os.listdir(GlobalArgs.model_dir)
     m_choices = [x.replace("Model", "") for x in current_models]
     print("Model files found: {}.".format(current_models))
 
@@ -48,7 +49,7 @@ def parse_args():
     parser.add_argument(
         '--mfile',
         required=False,
-        default=ARGS.GlobalArgs["model_dir"],
+        default=GlobalArgs.model_dir,
         help="Please indicate the model file: if the model file is like ../model/ResNet/xxx.h5, then input ../model"
     )
     return parser.parse_args()
@@ -57,7 +58,7 @@ def parse_args():
 def load_img(f):
     return resize(
         imread(f),
-        ARGS.TFRecordConfig["image_size"],
+        TFRecordConfigArgs.image_size,
         anti_aliasing=True
     ).astype('float32')
 
@@ -66,15 +67,15 @@ def main():
     print("Loading Mask Detection Model...")
     mask_model = tf.keras.models.load_model(
             get_optimal_model(
-                ARGS.GlobalArgs["model_dir"] + os.sep + AGS.model + "Model"
+                GlobalArgs.model_dir + os.sep + AGS.model + "Model"
             )
         )
     print("Success! Mask Detection Model is Loaded as {}".format(AGS.model))
 
     print("Loading Face Recognition Model...")
     face_recognition_model = cv2.dnn.readNet(
-        ARGS.GlobalArgs["face_recognition_dnn_prototxt_dir"],
-        ARGS.GlobalArgs["face_recognition_dnn_dir"]
+        GlobalArgs.face_recognition_dnn_prototxt_dir,
+        GlobalArgs.face_recognition_dnn_dir
     )
     print("Success! Face Detection Model is Loaded.")
 

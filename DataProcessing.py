@@ -1,14 +1,12 @@
 import re
 import tensorflow as tf
 import os
-import numpy as np
 import random
 from skimage import io
 from collections import Counter, defaultdict
 from skimage.transform import resize
 from joblib import Parallel, delayed
-import pickle
-from ARGS import ARGS
+from ProcessARGS import TFRecordConfigArgs, GlobalArgs
 
 
 def data_parser(x):
@@ -28,8 +26,8 @@ def data_parser(x):
         parsed_features[x] for x in ['height', 'width', 'channel', 'label']
     ]
     img = tf.io.decode_raw(parsed_features['img_raw'], 'float32')
-    img = tf.reshape(img, (*ARGS.TFRecordConfig["image_size"], ARGS.TFRecordConfig["num_channels"]))
-    img.set_shape((*ARGS.TFRecordConfig["image_size"], ARGS.TFRecordConfig["num_channels"]))
+    img = tf.reshape(img, (*TFRecordConfigArgs.image_size, TFRecordConfigArgs.num_channels))
+    img.set_shape((*TFRecordConfigArgs.image_size, TFRecordConfigArgs.num_channels))
     return (
         img, label
     )
@@ -52,7 +50,7 @@ def get_data(file_path, buffer_size, batch_size, auto_tune):
 
 
 def train_validation_split(file_names, split_rate, file_type='tfrecords'):
-    random.Random(ARGS.GlobalArgs['random_seed']).shuffle(file_names)
+    random.Random(GlobalArgs.random_seed).shuffle(file_names)
     if file_type:
         file_names = [x for x in file_names if x.endswith(file_type)]
     split_index = int(len(file_names) * split_rate)
@@ -62,29 +60,6 @@ def train_validation_split(file_names, split_rate, file_type='tfrecords'):
     )
 
 
-def save_obj(obj, name):
-    with open(name + '.pkl', 'wb') as f:
-        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
-
-
-def load_obj(name):
-    with open(name + '.pkl', 'rb') as f:
-        return pickle.load(f)
-
-
-  
-def helper(x):
-    try:
-        img = resize(
-            io.imread(x),
-            (700, 500),
-            anti_aliasing=True
-        ).astype('float32')
-    except:
-        img = None
-    return img  
-    
-    
 class TFRecordData:
     def __init__(
             self,
@@ -109,19 +84,22 @@ class TFRecordData:
     def convert(self):
         for i in range(self.num_iter):
             print('Writing {} of {}...'.format(i + 1, self.num_iter))
-            files = sum(
+            sub_files = sum(
                 [
                     self.category_to_file[category][i * self.num_per_category: (i + 1) * self.num_per_category]
                     for category in self.category_to_file
                 ],
                 []
             )
-            print(files)
-            random.Random(ARGS.GlobalArgs['random_seed']).shuffle(files)  # reproduce
+
+            # random.Random(ARGS.GlobalArgs['random_seed']).shuffle(files)  # reproduce
 
             print('Loading Files...')
-            train_x = Parallel(n_jobs=-1)(delayed(helper)(x) for x in files)
-            train_y = [self.__extract_class(file) for file in files]
+            train_x = Parallel(n_jobs=-1)(
+                delayed(self.helper)(f)
+                for f in sub_files
+            )
+            train_y = [self.__extract_class(f) for f in sub_files]
 
             print('Initializing TFRecord Data Writer...')
             cur_output_name = self.save_directory + "/" + '{}_{}'.format(i, i + 1) + '.tfrecords'
@@ -146,9 +124,19 @@ class TFRecordData:
                 writer.write(example.SerializeToString())
             writer.close()
 
+    def helper(self, x):
+        try:
+            img = resize(
+                io.imread(x),
+                self.image_size,
+                anti_aliasing=True
+            ).astype('float32')
+        except:
+            img = None
+        return img
 
     def __process_categories(self):
-        original_files = os.listdir(self.directory)[500:900]
+        original_files = os.listdir(self.directory)
         self.category_to_file = defaultdict(list)
         self.files = ["{}/{}".format(self.directory, x) for x in original_files]
         self.num_files = len(self.files)
@@ -159,7 +147,7 @@ class TFRecordData:
             self.category_to_file[category].append(file)
         for category in self.category_to_file:
             random.Random(
-                ARGS.GlobalArgs['random_seed']
+                GlobalArgs.random_seed
             ).shuffle(
                 self.category_to_file[category]
             )

@@ -2,7 +2,8 @@ import os
 from DataProcessing import train_validation_split, get_data, get_optimal_model
 import tensorflow as tf
 from Models import ModelCollection
-from ARGS import ARGS
+from ProcessARGS import GlobalArgs, TFRecordConfigArgs
+from ModelARGS import ARGS
 import argparse
 
 
@@ -26,7 +27,7 @@ def model_parser():
     parser.add_argument(
         '--testFile',
         required=False,
-        default=ARGS.GlobalArgs["test_save_directory"],
+        default=TFRecordConfigArgs.test_save_directory,
         help="Please specify a file path / directory to evaluate, accepted file types: [tfrecords]."
     )
     return parser.parse_args()
@@ -35,12 +36,12 @@ def model_parser():
 def train_model(model_name, model):
     print("...Training {} Model...".format(model_name))
     tf_rec_files = [
-        ARGS.TFRecordConfig["save_directory"] + os.sep + x
-        for x in os.listdir(ARGS.TFRecordConfig["save_directory"])
+        TFRecordConfigArgs.train_save_directory + os.sep + x
+        for x in os.listdir(TFRecordConfigArgs.train_save_directory)
     ]
     train_files, validation_files = train_validation_split(
         file_names=tf_rec_files,
-        split_rate=ARGS.GlobalArgs["validation_split"],
+        split_rate=GlobalArgs.validation_split,
         file_type='tfrecords'
     )
     train_data = get_data(
@@ -62,9 +63,9 @@ def train_model(model_name, model):
         metrics=ARGS.__dict__[model_name]["metrics"]
     )
 
-    steps_per_epoch = len(train_files) * ARGS.TFRecordConfig["size"] // ARGS.__dict__[model_name]["train_batch_size"] + 1
+    steps_per_epoch = len(train_files) * TFRecordConfigArgs.train_size // ARGS.__dict__[model_name]["train_batch_size"] + 1
     validation_steps = \
-        len(validation_files) * ARGS.TFRecordConfig["size"] // ARGS.__dict__[model_name]["validation_batch_size"] + 1
+        len(validation_files) * TFRecordConfigArgs.train_size // ARGS.__dict__[model_name]["validation_batch_size"] + 1
 
     model.fit(
         x=train_data,
@@ -78,8 +79,8 @@ def train_model(model_name, model):
 
 def train_vanilla():
     vanilla_model = mc.get_vanilla_model(
-        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-        num_classes=ARGS.GlobalArgs["num_classes"],
+        input_size=(*TFRecordConfigArgs.image_size, TFRecordConfigArgs.num_channels),
+        num_classes=GlobalArgs.num_classes,
         resize=ARGS.VanillaModel["resize"],
         translation=ARGS.VanillaModel["translation"],
         zoom=ARGS.VanillaModel["zoom"],
@@ -94,8 +95,8 @@ def train_vanilla():
 
 def train_resnet50():
     res_net_50_model = mc.get_resnet50_model(
-        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-        num_classes=ARGS.GlobalArgs['num_classes'],
+        input_size=(*TFRecordConfigArgs.image_size, TFRecordConfigArgs.num_channels),
+        num_classes=GlobalArgs.num_classes,
         resize=ARGS.ResNet50Model["resize"]
     )
     train_model(
@@ -106,8 +107,8 @@ def train_resnet50():
 
 def train_xception():
     xception_model = mc.get_xception_model(
-        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-        num_classes=ARGS.GlobalArgs['num_classes'],
+        input_size=(*TFRecordConfigArgs.image_size, TFRecordConfigArgs.num_channels),
+        num_classes=GlobalArgs.num_classes,
         resize=ARGS.XceptionModel["resize"]
     )
     train_model(
@@ -118,8 +119,8 @@ def train_xception():
 
 def train_vgg19():
     vgg19_model = mc.get_vgg19_model(
-        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-        num_classes=ARGS.GlobalArgs['num_classes'],
+        input_size=(*TFRecordConfigArgs.image_size, TFRecordConfigArgs.num_channels),
+        num_classes=GlobalArgs.num_classes,
         resize=ARGS.VGG19Model["resize"]
     )
     train_model(
@@ -130,8 +131,8 @@ def train_vgg19():
 
 def train_inceptionresnetv2():
     inception_res_net_v2_model = mc.get_inceptionresnetv2_model(
-        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-        num_classes=ARGS.GlobalArgs['num_classes'],
+        input_size=(*TFRecordConfigArgs.image_size, TFRecordConfigArgs.num_channels),
+        num_classes=GlobalArgs.num_classes,
         resize=ARGS.InceptionResNetV2Model["resize"]
     )
     train_model(
@@ -142,8 +143,8 @@ def train_inceptionresnetv2():
 
 def train_inceptionv3():
     inception_v3_model = mc.get_inceptionv3_model(
-        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-        num_classes=ARGS.GlobalArgs['num_classes'],
+        input_size=(*TFRecordConfigArgs.image_size, TFRecordConfigArgs.num_channels),
+        num_classes=GlobalArgs.num_classes,
         resize=ARGS.InceptionV3Model["resize"]
     )
     train_model(
@@ -156,13 +157,13 @@ def evaluate_model(model_name, test_data, file_names):
     print("Evaluating model {}...".format(model_name))
     optimal_model = tf.keras.models.load_model(
         get_optimal_model(
-            ARGS.GlobalArgs["model_dir"] + os.sep + model_name
+            GlobalArgs.model_dir + os.sep + model_name
         )
     )
     result = optimal_model.evaluate(
         test_data,
         verbose=1,
-        steps=len(file_names) * ARGS.TFRecordConfig["size"] // ARGS.TestConfig["test_batch_size"] + 1
+        steps=len(file_names) * TFRecordConfigArgs.test_size // TFRecordConfigArgs.test_batch_size + 1
     )
     print(result)
 
@@ -206,13 +207,13 @@ def main():
 
         test_data = get_data(
             file_path=file_names,
-            buffer_size=ARGS.TestConfig["test_buffer_size"],
-            batch_size=ARGS.TestConfig["test_batch_size"],
-            auto_tune=ARGS.TestConfig["auto_tune"]
+            buffer_size=TFRecordConfigArgs.test_buffer_size,
+            batch_size=TFRecordConfigArgs.test_batch_size,
+            auto_tune=TFRecordConfigArgs.auto_tune
         )
 
-        print("Scanning optimal models from model directory |{}|...".format(ARGS.GlobalArgs["model_dir"]))
-        model_files = os.listdir(ARGS.GlobalArgs["model_dir"])
+        print("Scanning optimal models from model directory |{}|...".format(GlobalArgs.model_dir))
+        model_files = os.listdir(GlobalArgs.model_dir)
         if model_files:
             print("Found models: {}".format(model_files))
         else:
