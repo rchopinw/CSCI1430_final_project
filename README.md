@@ -1,8 +1,8 @@
 Brown University CSCI1430 Computer Vision Final Project: Real-time Face Mask Detection System
 
 Contributors: 
-Bangxi Xiao
-Qiubai Yu
+Bangxi Xiao\n
+Qiubai Yu\n
 Xinyu Song
 Tianqi Liu
 
