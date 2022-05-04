@@ -107,7 +107,7 @@ class TFRecordData:
             random.Random(ARGS.GlobalArgs['random_seed']).shuffle(files)  # reproduce
 
             print('Loading Files...')
-            train_x = [self.helper(file) for file in files]
+            train_x = Parallel(n_jobs=-1)(delayed(self.helper)(x) for x in files)
             train_y = [self.__extract_class(file) for file in files]
 
             print('Initializing TFRecord Data Writer...')
