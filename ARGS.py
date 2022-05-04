@@ -19,6 +19,8 @@ class ARGS:
     TFRecordConfig = dict(
         directory='/home/bangxi_xiao2/data/images',
         save_directory='/home/bangxi_xiao2/data',
+        test_directory='/home/bangxi_xiao2/data/images',
+        test_save_directory='/home/bangxi_xiao2/data/test_tfrecords',
         size=5000,
         num_channels=3,
         image_size=(700, 500)
@@ -221,5 +223,10 @@ class ARGS:
         ]
     )
 
+    TestConfig = dict(
+        auto_tune=tf.data.experimental.AUTOTUNE,
+        test_batch_size=32,
+        test_buffer_size=256
+    )
 
 random.seed(ARGS.GlobalArgs['random_seed'])

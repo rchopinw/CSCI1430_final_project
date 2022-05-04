@@ -1,3 +1,4 @@
+import re
 import tensorflow as tf
 import os
 import numpy as np
@@ -102,7 +103,7 @@ class TFRecordData:
                 ],
                 []
             )
-            random.Random(ARGS.GlobalArgs['random_seed']).shuffle(files)
+            random.Random(ARGS.GlobalArgs['random_seed']).shuffle(files)  # reproduce
 
             print('Loading Files...')
             train_x = Parallel(n_jobs=-1)(delayed(self.helper)(file) for file in files)
@@ -180,3 +181,20 @@ class TFRecordData:
     @staticmethod
     def __float32_feature(value):
         return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
+
+
+def get_optimal_model(model_dir):
+    model_files = os.listdir(model_dir)
+    if not model_files:
+        raise FileNotFoundError("File no found.")
+    else:
+        model_accs = [
+            float(
+                re.findall(
+                    r"[+-]?\d+\.\d+", file.split("acc")[-1]
+                )[0]
+            )
+            for file in model_files
+        ]
+        optimal_model_dir = model_files[model_accs.index(max(model_accs))]
+    return model_dir + os.sep + optimal_model_dir

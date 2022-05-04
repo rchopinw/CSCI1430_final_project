@@ -8,15 +8,13 @@ class ModelCheckPointSaver(tf.keras.callbacks.Callback):
         super().__init__()
 
         self.checkpoint_dir = checkpoint_dir
-
-        if not os.path.isdir(self.checkpoint_dir):
-            os.mkdir(self.checkpoint_dir)
-
         self.max_num_weights = max_num_weights
         self.model_id = model_id
         self.save_weights = save_weights
 
     def on_epoch_end(self, epoch, logs=None):
+        if not os.path.isdir(self.checkpoint_dir):
+            os.mkdir(self.checkpoint_dir)
         min_acc_file, max_acc_file, max_acc, num_weights = self.scan_weight_files()
         cur_acc = logs["val_sparse_categorical_accuracy"]
         if cur_acc > max_acc:

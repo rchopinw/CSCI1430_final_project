@@ -1,13 +1,7 @@
 import os
-from DataProcessing import train_validation_split, get_data
-from Models import (
-    get_vgg_19_model,
-    get_vanilla_model,
-    get_xception_model,
-    get_res_net_50_model,
-    get_inception_v3_model,
-    get_inception_res_net_v2_model
-)
+from DataProcessing import train_validation_split, get_data, get_optimal_model
+import tensorflow as tf
+from Models import ModelCollection
 from ARGS import ARGS
 import argparse
 
@@ -18,10 +12,22 @@ def model_parser():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
+        '--mode',
+        required=True,
+        choices=["train", "test"],
+        help="Please specify task from [train, test]."
+    )
+    parser.add_argument(
         '--model',
         required=True,
-        choices=['Vanilla', "ResNet50", "Xception", "VGG19", "InceptionV3", "InceptionResNetV2"],
-        help="Please select model from [Vanilla, ResNet50, Xception, VGG19, Inception] to train."
+        choices=['Vanilla', "ResNet50", "Xception", "VGG19", "InceptionV3", "InceptionResNetV2", "All"],
+        help="Please select model from [Vanilla, ResNet50, Xception, VGG19, InceptionV3, InceptionResNetV2, All] to train."
+    )
+    parser.add_argument(
+        '--testFile',
+        required=False,
+        default=ARGS.GlobalArgs["test_save_directory"],
+        help="Please specify a file path / directory to evaluate, accepted file types: [tfrecords]."
     )
     return parser.parse_args()
 
@@ -70,74 +76,167 @@ def train_model(model_name, model):
     )
 
 
+def train_vanilla():
+    vanilla_model = mc.get_vanilla_model(
+        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+        num_classes=ARGS.GlobalArgs["num_classes"],
+        resize=ARGS.VanillaModel["resize"],
+        translation=ARGS.VanillaModel["translation"],
+        zoom=ARGS.VanillaModel["zoom"],
+        contrast=ARGS.VanillaModel["contrast"],
+        flip=ARGS.VanillaModel["flip"],
+    )
+    train_model(
+        model_name="VanillaModel",
+        model=vanilla_model
+    )
+
+
+def train_resnet50():
+    res_net_50_model = mc.get_resnet50_model(
+        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+        num_classes=ARGS.GlobalArgs['num_classes'],
+        resize=ARGS.ResNet50Model["resize"]
+    )
+    train_model(
+        model_name="ResNet50Model",
+        model=res_net_50_model
+    )
+
+
+def train_xception():
+    xception_model = mc.get_xception_model(
+        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+        num_classes=ARGS.GlobalArgs['num_classes'],
+        resize=ARGS.XceptionModel["resize"]
+    )
+    train_model(
+        model_name="XceptionModel",
+        model=xception_model
+    )
+
+
+def train_vgg19():
+    vgg19_model = mc.get_vgg19_model(
+        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+        num_classes=ARGS.GlobalArgs['num_classes'],
+        resize=ARGS.VGG19Model["resize"]
+    )
+    train_model(
+        model_name="VGG19Model",
+        model=vgg19_model
+    )
+
+
+def train_inceptionresnetv2():
+    inception_res_net_v2_model = mc.get_inceptionresnetv2_model(
+        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+        num_classes=ARGS.GlobalArgs['num_classes'],
+        resize=ARGS.InceptionResNetV2Model["resize"]
+    )
+    train_model(
+        model_name="InceptionResNetV2Model",
+        model=inception_res_net_v2_model
+    )
+
+
+def train_inceptionv3():
+    inception_v3_model = mc.get_inceptionv3_model(
+        input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
+        num_classes=ARGS.GlobalArgs['num_classes'],
+        resize=ARGS.InceptionV3Model["resize"]
+    )
+    train_model(
+        model_name="InceptionV3Model",
+        model=inception_v3_model
+    )
+
+
+def evaluate_model(model_name, test_data, file_names):
+    print("Evaluating model {}...".format(model_name))
+    optimal_model = tf.keras.models.load_model(
+        get_optimal_model(
+            ARGS.GlobalArgs["model_dir"] + os.sep + model_name
+        )
+    )
+    result = optimal_model.evaluate(
+        test_data,
+        verbose=1,
+        steps=len(file_names) * ARGS.TFRecordConfig["size"] // ARGS.TestConfig["test_batch_size"] + 1
+    )
+    print(result)
+
+
 def main():
-    if ARG.model == "Vanilla":
-        vanilla_model = get_vanilla_model(
-            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-            num_classes=ARGS.GlobalArgs["num_classes"],
-            resize=ARGS.VanillaModel["resize"],
-            translation=ARGS.VanillaModel["translation"],
-            zoom=ARGS.VanillaModel["zoom"],
-            contrast=ARGS.VanillaModel["contrast"],
-            flip=ARGS.VanillaModel["flip"],
+    if ARG.mode == "train":
+        if ARG.model == "All":
+            train_vanilla()
+            train_vgg19()
+            train_inceptionresnetv2()
+            train_resnet50()
+            train_xception()
+            train_inceptionv3()
+        else:
+            if ARG.model == "Vanilla":
+                train_vanilla()
+            elif ARG.model == "ResNet50":
+                train_resnet50()
+            elif ARG.model == "Xception":
+                train_xception()
+            elif ARG.model == "VGG19":
+                train_vgg19()
+            elif ARG.model == "InceptionResNetV2":
+                train_inceptionresnetv2()
+            elif ARG.model == "InceptionV3":
+                train_inceptionv3()
+    elif ARG.mode == "test":
+        if os.path.isdir(ARG.test):
+            file_names = os.listdir(ARG.test)
+            file_names = [x for x in file_names if x.endswith('tfrecords') or x.endswith('tfrecord')]
+        elif os.path.isfile(ARG.test):
+            if ARG.test.endswith('tfrecords') or ARG.test.endswith('tfrecord'):
+                file_names = [ARG.test]
+            else:
+                file_names = []
+        else:
+            raise FileExistsError("Invalid path.")
+
+        if not file_names:
+            raise FileNotFoundError("Can't find files ending with tfrecords/tfrecord.")
+
+        test_data = get_data(
+            file_path=file_names,
+            buffer_size=ARGS.TestConfig["test_buffer_size"],
+            batch_size=ARGS.TestConfig["test_batch_size"],
+            auto_tune=ARGS.TestConfig["auto_tune"]
         )
-        train_model(
-            model_name="VanillaModel",
-            model=vanilla_model
-        )
-    elif ARG.model == "ResNet50":
-        res_net_50_model = get_res_net_50_model(
-            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-            num_classes=ARGS.GlobalArgs['num_classes'],
-            resize=ARGS.ResNet50Model["resize"]
-        )
-        train_model(
-            model_name="ResNet50Model",
-            model=res_net_50_model
-        )
-    elif ARG.model == "Xception":
-        xception_model = get_xception_model(
-            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-            num_classes=ARGS.GlobalArgs['num_classes'],
-            resize=ARGS.XceptionModel["resize"]
-        )
-        train_model(
-            model_name="XceptionModel",
-            model=xception_model
-        )
-    elif ARG.model == "VGG19":
-        vgg19_model = get_vgg_19_model(
-            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-            num_classes=ARGS.GlobalArgs['num_classes'],
-            resize=ARGS.VGG19Model["resize"]
-        )
-        train_model(
-            model_name="VGG19Model",
-            model=vgg19_model
-        )
-    elif ARG.model == "InceptionResNetV2":
-        inception_res_net_v2_model = get_inception_res_net_v2_model(
-            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-            num_classes=ARGS.GlobalArgs['num_classes'],
-            resize=ARGS.InceptionResNetV2Model["resize"]
-        )
-        train_model(
-            model_name="InceptionResNetV2Model",
-            model=inception_res_net_v2_model
-        )
-    elif ARG.model == "InceptionV3":
-        inception_v3_model = get_inception_v3_model(
-            input_size=(*ARGS.TFRecordConfig['image_size'], ARGS.TFRecordConfig['num_channels']),
-            num_classes=ARGS.GlobalArgs['num_classes'],
-            resize=ARGS.InceptionV3Model["resize"]
-        )
-        train_model(
-            model_name="InceptionV3Model",
-            model=inception_v3_model
-        )
+
+        print("Scanning optimal models from model directory |{}|...".format(ARGS.GlobalArgs["model_dir"]))
+        model_files = os.listdir(ARGS.GlobalArgs["model_dir"])
+        if model_files:
+            print("Found models: {}".format(model_files))
+        else:
+            raise FileNotFoundError("Model no found, check directory setting of 'model_dir' or train the model first.")
+
+        if ARG.model == "All":
+            for model in model_files:
+                evaluate_model(
+                    model_name=model,
+                    test_data=test_data,
+                    file_names=file_names
+                )
+        else:
+            evaluate_model(
+                model_name="{}Model".format(ARG.model),
+                test_data=test_data,
+                file_names=file_names
+            )
+    else:
+        raise ValueError("Please specify task from [train, test].")
 
 
 if __name__ == "__main__":
+    mc = ModelCollection()
     ARG = model_parser()
     main()
 

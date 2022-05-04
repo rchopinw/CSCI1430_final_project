@@ -8,6 +8,7 @@ import numpy as np
 from skimage.transform import resize
 from skimage.io import imread
 from joblib import Parallel, delayed
+from DataProcessing import get_optimal_model
 
 
 def parse_args():
@@ -51,23 +52,6 @@ def parse_args():
         help="Please indicate the model file: if the model file is like ../model/ResNet/xxx.h5, then input ../model"
     )
     return parser.parse_args()
-
-
-def get_optimal_model(model_dir):
-    model_files = os.listdir(model_dir)
-    if len(model_files) == 1:
-        optimal_model_dir = model_files[0]
-    else:
-        model_accs = [
-            float(
-                re.findall(
-                    r"[+-]?\d+\.\d+", file.split("acc")[-1]
-                )[0]
-            )
-            for file in model_files
-        ]
-        optimal_model_dir = model_files[model_accs.index(max(model_accs))]
-    return optimal_model_dir
 
 
 def load_img(f):
