@@ -3,7 +3,6 @@ import cv2
 import argparse
 import re
 import tensorflow as tf
-from ModelARGS import ARGS
 from ProcessARGS import GlobalArgs, TFRecordConfigArgs
 import numpy as np
 from skimage.transform import resize
