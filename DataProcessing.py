@@ -148,7 +148,7 @@ class TFRecordData:
 
 
     def __process_categories(self):
-        original_files = os.listdir(self.directory)
+        original_files = os.listdir(self.directory)[500:900]
         self.category_to_file = defaultdict(list)
         self.files = ["{}/{}".format(self.directory, x) for x in original_files]
         self.num_files = len(self.files)
