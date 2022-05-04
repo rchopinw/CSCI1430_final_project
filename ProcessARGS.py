@@ -15,17 +15,17 @@ class GlobalArgs:
 class TFRecordConfigArgs:
     train_directory = '/home/bangxi_xiao2/data/images'
     train_save_directory = '/home/bangxi_xiao2/data'
-    train_size = 10
-    # test_directory='/home/bangxi_xiao2/data/images'
-    # test_save_directory='/home/bangxi_xiao2/data/test_tfrecords'
-    test_directory = "D:/Brown Learning Materials/CSCI1430/archive/images"
-    test_save_directory = "D:/Brown Learning Materials/CSCI1430/archive/test_tfrecords"
-    test_size = 10
-    test_batch_size=32
-    test_buffer_size=256
+    train_size = 5000
+    test_directory = '/home/bangxi_xiao2/data/images'
+    test_save_directory = '/home/bangxi_xiao2/data/test_tfrecords'
+    # test_directory = "D:/Brown Learning Materials/CSCI1430/archive/images"
+    # test_save_directory = "D:/Brown Learning Materials/CSCI1430/archive/test_tfrecords"
+    test_size = 3000
+    test_batch_size = 32
+    test_buffer_size = 256
     num_channels = 3
     image_size = (700, 500)
-    auto_tune=tf.data.experimental.AUTOTUNE
+    auto_tune = tf.data.experimental.AUTOTUNE
 
 
 random.seed(GlobalArgs.random_seed)
