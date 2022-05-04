@@ -194,6 +194,7 @@ def main():
         if os.path.isdir(ARG.testFile):
             file_names = os.listdir(ARG.testFile)
             file_names = [x for x in file_names if x.endswith('tfrecords') or x.endswith('tfrecord')]
+            file_names = [ARG.testFile + os.sep + x for x in file_names]
         elif os.path.isfile(ARG.testFile):
             if ARG.testFile.endswith('tfrecords') or ARG.testFile.endswith('tfrecord'):
                 file_names = [ARG.testFile]
