@@ -178,6 +178,8 @@ def main():
 
         # Release the VideoCapture object
         cap.release()
+    else:
+        raise ValueError("Please specify task from [Camera, Image].")
 
 
 AGS = parse_args()
