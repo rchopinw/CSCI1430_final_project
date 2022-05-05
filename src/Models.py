@@ -183,7 +183,7 @@ class ModelCollection:
         x = tf.keras.applications.inception_v3.preprocess_input(x)
         x = base_model(x)
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(1000, activation="softmax")(x)
+        x = tf.keras.layers.Dense(1000, activation="relu")(x)
         x = tf.keras.layers.Dropout(0.2)(x)
         x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
         m = tf.keras.Model(
