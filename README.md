@@ -9,9 +9,9 @@ FIRST THING FIRST: Install the required packages from requirements.txt
 Usage (model preparation):
 
 1. Cloning the git repository to local. 
-2. Open train_log and you will find a bunch of model zip files.
-3. Unzip the one ending with ".zip" to directory "model".
-4. The desired file structure of "train_logs" is: train_output/log - where the training log data are stored; train_output/model - where the trained models are stored; train_output/evaluate.txt - the evaluation (test) results of all the models.
+2. To download from GCP bucket, gsutil is needed. To install the gsutil tool, please check: https://cloud.google.com/storage/docs/gsutil_install (we highly recommend the pip method)
+3. Afer installing the required tools, run "gsutil ls gs://csci1430-final" in command line to check the file structures in the bucket. To fetch the trained models, run "gsutil -m cp gs://csci1430-final/train_output/model {PATH_TO_THIS_REPO}/train_log".
+4. (Alternative) You can also download model from our Google Drive: https://drive.google.com/drive/folders/1---YVlPH8-LfapZ6TiLRCcGOrpuJquam?usp=sharing
 
 Usage (training, validation, and testing tfrecords data generation):
 
@@ -32,5 +32,3 @@ Usage (detection system):
 1. Make sure that your PC has a camera.
 2. Running script "run_detection.py". You might also want to learn more about the options we provide via "python run_detection.py --help".
 
-Other notes:
-To download data from GCP bucket, gsutil is needed. 
