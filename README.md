@@ -15,4 +15,4 @@ Usage (training, validation, and testing tfrecords data generation):
 
 1. The original dataset for training and validation can be found via: https://www.kaggle.com/datasets/tapakah68/medical-masks-part1
 2. The original testing data can be found via: https://www.kaggle.com/datasets/tapakah68/medical-masks-part7
-3. After downloading and unzipping the files
+3. After downloading and unzipping the files, please create another file 
